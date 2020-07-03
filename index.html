@@ -4,21 +4,22 @@
 
 <script>
     function loadDoc(){
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200){
                 document.getElementById("viewtable").innerHTML = this.responseText;
             }
         };
-        xhttp.open("GET", "http://localhost:8080/", true);
-        xhttp.send();
+        
+        request.open("GET", "http://localhost:8080/", true);
+        request.send();
     }
 </script>
 
 <div id="">
   <h2>Phone models</h2>
   
-  <button type="button" onclick="loadDoc()">Add phone</button>
+  <button type="button" onclick="loadDoc()">Add Phone</button>
   <button type="button" onclick="loadDoc()">Delete phone</button>
   <button type="button" onclick="loadDoc()">Find phone</button>
   <button type="button" onclick="loadDoc()">Update phone</button>

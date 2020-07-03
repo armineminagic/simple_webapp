@@ -28,7 +28,7 @@ type Phone struct {
 	DeviceModel 	string	`json:"model"`
 	SerialNumber 	uint	`json:"serial"`
 	Storage			uint	`json:"storage"`
-	Color 			string	`json:"string"`	
+	Color 			string	`json:"color"`	
 }
 
 func ifError(e error){
@@ -60,7 +60,7 @@ func DbConn(ca CmdArgs) (db *sql.DB) {
 	return db
 }
 
-
+// IndexHandler handler for homepage
 func IndexHandler(w http.ResponseWriter, r *http.Request){
 	db := DbConn(cmdArgs)
 	defer db.Close()
@@ -79,7 +79,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request){
 	}
 	phonesJSON, err := json.Marshal(phones)
 	ifError(err)
-	fmt.Println(string(phonesJSON))
+	// fmt.Println(string(phonesJSON))
+	fmt.Fprintf(w, string(phonesJSON))
 	w.Write(phonesJSON)
 }
 
@@ -93,7 +94,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request){
 func middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Cotrol-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE")
+		w.Header().Set("Access-Control-Allow-Methods", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
 		log.Println(r.Method)
 		log.Println(r.RequestURI)
 		next.ServeHTTP(w,r)
