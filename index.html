@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script>
+    function loadDoc(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                document.getElementById("viewtable").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "http://localhost:8080/", true);
+        xhttp.send();
+    }
+</script>
+
+<div id="">
+  <h2>Phone models</h2>
+  
+  <button type="button" onclick="loadDoc()">Add phone</button>
+  <button type="button" onclick="loadDoc()">Delete phone</button>
+  <button type="button" onclick="loadDoc()">Find phone</button>
+  <button type="button" onclick="loadDoc()">Update phone</button>
+
+</div>
+
+
+
+
+<div id="viewtable">
+<table border="1" id="p_table">
+    <thead>
+    <tr>
+      <td>Phone Model</td>
+      <td>Serial Number</td>
+      <td>Color</td>
+      <td>Storage</td> 
+    </tr>
+     </thead>
+     <tbody>
+    <tr>
+      <td>Phone Model</td>
+      <td>Serial Number</td>
+      <td>Color</td>
+      <td>Storage</td> 
+      <!-- <td><a href="/show?id={{ .Id }}">View</a></td>
+      <td><a href="/edit?id={{ .Id }}">Edit</a></td>
+      <td><a href="/delete?id={{ .Id }}">Delete</a><td> -->
+    </tr>
+     </tbody>
+  </table>
+
+</body>
+</html>
