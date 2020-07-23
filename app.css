@@ -1,0 +1,35 @@
+.topnav {
+    overflow: hidden;
+    margin: auto;
+    margin-top: 5px;
+    background-color: rgb(255, 255, 255);
+}
+
+.searchForm input[type=number] {
+    padding: 10px;
+    font-size: 12px;
+    border: 1px solid grey;
+    float: center;
+    width: 12%;
+    background: #f1f1f1;
+}
+
+.searchForm button {
+    float: center;
+    width: 5%;
+    padding: 10px;
+    background: #dde7ee;
+    color: white;
+    font-size: 12px;
+    border: 1px solid grey;
+    /* border-left: none; Prevent double borders */
+    cursor: pointer;
+}
+
+#tbstud {
+    width: 20%;
+    margin-left: auto;   
+    margin-right: auto;
+    border: 1px solid grey;
+}
+

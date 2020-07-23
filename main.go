@@ -32,7 +32,7 @@ type Student struct {
 
 func ifError(e error) {
 	if e != nil {
-		panic(e.Error())
+		log.Fatal(e.Error())
 	}
 }
 
@@ -58,21 +58,43 @@ func getStudents(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	rows, err := db.Query("Select * from students")
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err.Error())
 	}
 	stud := Student{}
 	students := []Student{}
 	for rows.Next() {
 		err = rows.Scan(&stud.Indexnum, &stud.IDnumber, &stud.Name, &stud.Surname)
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err.Error())
 		}
 		students = append(students, stud)
 	}
 	studentsJSON, err := json.Marshal(students)
 	ifError(err)
 	w.Write(studentsJSON)
-	// fmt.Println(string(studentsJSON))
+}
+
+func searchStudent(w http.ResponseWriter, r *http.Request) {
+
+	searchValue := mux.Vars(r)
+
+	db := DbConn(cmdArgs)
+	defer db.Close()
+
+	row, err := db.Query("Select * from students where `index`= ?", searchValue["indexnum"])
+
+	ifError(err)
+	student := Student{}
+	students := []Student{}
+	for row.Next() {
+		err = row.Scan(&student.Indexnum, &student.IDnumber, &student.Name, &student.Surname)
+		ifError(err)
+		students = append(students, student)
+	}
+	studentsJSON, err := json.Marshal(students)
+	ifError(err)
+	w.Write(studentsJSON)
+
 }
 
 func middleware(next http.Handler) http.Handler {
@@ -96,6 +118,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", getStudents)
+	r.HandleFunc("/search/{indexnum}", searchStudent)
 	r.Use(middleware)
 
 	log.Fatal(http.ListenAndServe(":8080", r))

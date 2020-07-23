@@ -3,8 +3,6 @@ function loadDoc(){
     var tablestud = document.querySelector("#tbstud > tbody");
     
     var xhr = new XMLHttpRequest();
-
-
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200){
             loadData(tablestud, this.response);
@@ -12,6 +10,27 @@ function loadDoc(){
     }; 
     xhr.open("GET", "http://localhost:8080/", true);
     xhr.send();
+}
+
+function searchByIndex() {
+
+    var formSearchEl = document.querySelector("#searchForm > input").value;
+    if (formSearchEl != 0){
+        var tablestud = document.querySelector("#tbstud > tbody");
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() { 
+            if (this.readyState == 4 && this.status == 200){
+                loadData(tablestud, this.response);
+            }
+        };
+
+        xhr.open("GET", "http://localhost:8080/search/" + formSearchEl,true);
+        xhr.send();
+    } else {
+        alert("Enter the index number!");
+    }
+
 }
 
 function loadData(tbstud, response){ 
