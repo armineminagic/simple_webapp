@@ -1,56 +1,31 @@
 <!DOCTYPE html>
+<head>
+  <meta name="vewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+  <title>Faculty</title>
+</head>
+
+<script src="app.js"></script>
+
 <html>
-<body>
+  <body onload="loadDoc()" >
 
-<script>
-    function loadDoc(){
-        var request = new XMLHttpRequest();
-        request.onreadystatechange = function(){
-            if(this.readyState == 4 && this.status == 200){
-                document.getElementById("viewtable").innerHTML = this.responseText;
-            }
-        };
-        
-        request.open("GET", "http://localhost:8080/", true);
-        request.send();
-    }
-</script>
+  <div class="container" align="center">
+    <h2>Students</h2>
+  </div>
 
-<div id="">
-  <h2>Phone models</h2>
-  
-  <button type="button" onclick="loadDoc()">Add Phone</button>
-  <button type="button" onclick="loadDoc()">Delete phone</button>
-  <button type="button" onclick="loadDoc()">Find phone</button>
-  <button type="button" onclick="loadDoc()">Update phone</button>
-
-</div>
-
-
-
-
-<div id="viewtable">
-<table border="1" id="p_table">
+  <table id="tbstud" class="table"  style="margin-left: auto; margin-right: auto; " border="1px">
     <thead>
-    <tr>
-      <td>Phone Model</td>
-      <td>Serial Number</td>
-      <td>Color</td>
-      <td>Storage</td> 
-    </tr>
-     </thead>
-     <tbody>
-    <tr>
-      <td>Phone Model</td>
-      <td>Serial Number</td>
-      <td>Color</td>
-      <td>Storage</td> 
-      <!-- <td><a href="/show?id={{ .Id }}">View</a></td>
-      <td><a href="/edit?id={{ .Id }}">Edit</a></td>
-      <td><a href="/delete?id={{ .Id }}">Delete</a><td> -->
-    </tr>
-     </tbody>
+      <tr>
+        <td>Name</td>
+        <td>Surname</td>
+        <td>Index</td>
+        <td>Student ID</td> 
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
   </table>
 
-</body>
+
+  </body>
 </html>

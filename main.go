@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"flag"
-	"fmt"
 	_ "fmt"
 	"log"
 	"net/http"
@@ -15,23 +14,23 @@ import (
 
 // CmdArgs holds values about command line flags
 type CmdArgs struct {
-	DbName string
-	User string
+	DbName   string
+	User     string
 	Password string
 }
 
 // cmdArgs for db connection info
 var cmdArgs CmdArgs
 
-// Phone holds information about phone
-type Phone struct {
-	DeviceModel 	string	`json:"model"`
-	SerialNumber 	uint	`json:"serial"`
-	Storage			uint	`json:"storage"`
-	Color 			string	`json:"color"`	
+// Student holds information about stud
+type Student struct {
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+	Indexnum uint   `json:"indexnum"`
+	IDnumber uint64 `json:"id"`
 }
 
-func ifError(e error){
+func ifError(e error) {
 	if e != nil {
 		panic(e.Error())
 	}
@@ -40,80 +39,64 @@ func ifError(e error){
 // DbConn creates DB and table if not exists
 func DbConn(ca CmdArgs) (db *sql.DB) {
 
-	db, err := sql.Open("mysql", ca.User + ":" + ca.Password +"@tcp(127.0.0.1:3306)/?charset=utf8&autocommit=true")
-	ifError(err)
-	
-	_, err = db.Exec(`create database if not exists `+ ca.DbName + `;`)	
-	ifError(err)
-	
-	_, err = db.Exec(`use ` + ca.DbName + `;`)
+	db, err := sql.Open("mysql", ca.User+":"+ca.Password+"@tcp(127.0.0.1:3306)/"+ca.DbName)
+
 	ifError(err)
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS phone(
-		serial_num int not null primary key,
-		dev_model varchar(100) not null,
-		storage int not null,
-		color varchar(20) not null
-		);`)
-	ifError(err)
-	
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `students` (`index` INTEGER NOT NULL, `idstud` INTEGER NOT NULL, `name` VARCHAR(30) not null, `surname` VARCHAR(30) not null);")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return db
 }
 
-// IndexHandler handler for homepage
-func IndexHandler(w http.ResponseWriter, r *http.Request){
+// Students handler for homepage
+func getStudents(w http.ResponseWriter, r *http.Request) {
 	db := DbConn(cmdArgs)
 	defer db.Close()
-	rows, err := db.Query("Select * from phone")
-	if err != nil { 
+	rows, err := db.Query("Select * from students")
+	if err != nil {
 		panic(err.Error())
 	}
-	phone := Phone{}
-	phones := []Phone{}
+	stud := Student{}
+	students := []Student{}
 	for rows.Next() {
-		err = rows.Scan(&phone.SerialNumber,&phone.DeviceModel, &phone.Storage, &phone.Color)
+		err = rows.Scan(&stud.Indexnum, &stud.IDnumber, &stud.Name, &stud.Surname)
 		if err != nil {
 			panic(err.Error())
 		}
-		phones = append(phones, phone)
+		students = append(students, stud)
 	}
-	phonesJSON, err := json.Marshal(phones)
+	studentsJSON, err := json.Marshal(students)
 	ifError(err)
-	// fmt.Println(string(phonesJSON))
-	fmt.Fprintf(w, string(phonesJSON))
-	w.Write(phonesJSON)
+	w.Write(studentsJSON)
+	// fmt.Println(string(studentsJSON))
 }
 
-// func AddPhoneHandler(w http.ResponseWriter, r *http.Request){
-// 	db := DbConn(cmdArgs)
-// 	if r.Method == "POST" {
-
-// 	}
-// }
-
 func middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "*")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		log.Println(r.Method)
 		log.Println(r.RequestURI)
-		next.ServeHTTP(w,r)
+		next.ServeHTTP(w, r)
 	})
 }
 
 func main() {
-	
+
 	flag.StringVar(&cmdArgs.User, "u", "root", "database connection user")
 	flag.StringVar(&cmdArgs.Password, "p", "root", "database connection password")
-	flag.StringVar(&cmdArgs.DbName, "db", "phones", "database connection password")
+	flag.StringVar(&cmdArgs.DbName, "db", "faculty", "database name")
 	flag.Parse()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", IndexHandler)
+	r.HandleFunc("/", getStudents)
 	r.Use(middleware)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
-
 }
